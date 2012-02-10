@@ -1,16 +1,21 @@
 <?php
-namespace spoons\resources;
+namespace spoons\resources\Tweets;
+use \DB;
 
-class Tweets 
+function getCollection($from, $to, $lang='all', $limit=500, $randomize=1) 
 {
+   $lang = (is_null($lang) ? 'all' : $lang);
+   $limit = (is_null($limit) ? 500 : $limit);
+   $randomize = (is_null($randomize) ? 1 : $randomize);
 
-   public static function getCollection($params) 
-   {
-      $from = $params[FROM];
-      $to = $params[TO];
-      $lang = $params[LANG];
-      $limit = $params[LIMIT];
-   }
+   $collection = DB::query('CALL getTweets(%s, %i, %i, %i, %i);',
+      $lang,
+      $from,
+      $to,
+      $limit,
+      $randomize);
+
+   return $collection;
 }
 
 ?>

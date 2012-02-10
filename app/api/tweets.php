@@ -1,27 +1,29 @@
 <?php
 namespace spoons\api;
 
-// PHP require paths are relative to the initial script, which in this
-// case is index.php in /public.
+require_once '../app/constants.php';
+require_once '../app/api/middleware.php';
 require_once '../app/resources/tweets.php';
+
 use \spoons\resources\Tweets;
 
-// Retrieve information about the entire collection of tweets or
-// retrieve a subset of tweet collection.
-$app->get('/api/tweets', function()
+
+$app->get('/api/tweets', $ensureTimerange, function()
 {
    global $app;
-   $getParams = $app->request()->get();
+   $request = $app->request();
 
-   $collection = Tweets::getCollection($getParams);
+   $from = $request->get(FROM);
+   $to = $request->get(TO);
+   $lang = $request->get(LANG);
+   $limit = $request->get(LIMIT);
+   $randomize = $request->get(RANDOMIZE);
+
+   $collection = Tweets\getCollection($from, $to, $lang, $limit, $randomize);
 
    //Error checking
-   //conditions:
-   // missing paramters
-   // no results
 
    echo json_encode($collection);
 });
-
 
 ?>

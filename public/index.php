@@ -1,5 +1,6 @@
 <?php
 
+require_once '../config/config.php';
 require_once '../app/lib/Slim/Slim.php';
 require_once '../app/lib/Slim/MustacheView.php';
 
