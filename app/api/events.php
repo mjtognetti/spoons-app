@@ -1,40 +1,57 @@
 <?php
 namespace spoons\api;
 
-require_once '../app/resources/events.php';
+require_once '../app/api/middleware.php';
 require_once '../app/constants.php';
+require_once '../app/resources/events.php';
+
 
 use \spoons\resources\Events;
 
-/*
-const FROM = 'from';
-const TO = 'to';
-const EVENT_TYPE = 'type';
-const ANNOTATION = 'annotation';
-const SEVERITY = 'severity';
-*/
-
 
 $app->get('/api/events', function() {
-   Events::getSources();
+   $sources = Events\getSources();
+   echo json_encode($sources);
 });
 
-$app->post('/api/events/:source', function($source) {
-   Events::createEvent($source);
-});
-$app->get('/api/events/:source', function($source)
+$app->get('/api/events/:source', $ensureTimerange, function($source)
 {
    global $app;
    $from = $app->request()->get(FROM);
    $to = $app->request()->get(TO);
 
-   Events::getEvents($source, $from, $to);
+   $events = Events\getEvents($source, $from, $to);
+   echo json_encode($events);
 });
-$app->put('/api/events/:source/:eventId', function($source, $eventId)
+
+$app->post('/api/events/:source', $ensureTimerange, function($source) {
+   global $app;
+   $post = $app->request();
+
+   $from = $post(FROM);
+   $to = $post(TO);
+   $type = $post(TYPE);
+   $severity = $post(SEVERITY);
+   $annotation = $post(ANNOTATION);
+
+   $event = Events\createEvent($source, $from, $to, $type, $severity, $annotation);
+   echo json_encode($event);
+});
+
+$app->put('/api/events/:source/:eventId', $ensureTimerange, function($source, $eventId)
 {
    global $app;
-   $getParams = $app->request()->get();
-   Events::editEvent($source, $eventId, $getParams);
+   $post = $app->request();
+
+   $from = $post(FROM);
+   $to = $post(TO);
+   $type = $post(TYPE);
+   $severity = $post(SEVERITY);
+   $annotation = $post(ANNOTATION);
+   $id = $post(ID);
+
+   $event = Events\editEvent($source, $from, $to, $type, $severity, $annotation, $id);
+   echo json_encode($event);
 });
 
 
