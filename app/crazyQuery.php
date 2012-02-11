@@ -18,7 +18,9 @@ $app->post('/crazyQuery', function()
       if (stripos($query, 'delete') !== FALSE ||
          stripos($query, 'drop') !== FALSE ||
          stripos($query, 'truncate') !== FALSE ||
-         stripos($query, 'alter') !== FALSE)
+         stripos($query, 'alter') !== FALSE ||
+         stripos($query, 'update') !== FALSE ||
+         stripos($query, 'insert') !== FALSE)
       {
          $app->halt(400, "I don't think so.");
       }
