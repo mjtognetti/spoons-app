@@ -32,6 +32,8 @@ require_once '../app/api/tweets.php';
 require_once '../app/api/timeseries.php';
 require_once '../app/api/events.php';
 
+require_once '../app/crazyQuery.php';
+
 $app->run();
 
 ?> 
