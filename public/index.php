@@ -22,6 +22,12 @@ $protect = function() {
    }
 };
 
+$app->get('/', function()
+{
+   global $app;
+   $app->render('main.mustache');
+});
+
 require_once '../app/api/tweets.php';
 require_once '../app/api/timeseries.php';
 require_once '../app/api/events.php';

@@ -25,12 +25,12 @@ function getEvents($source, $from, $to)
 
 function createEvent()
 {
-   return call_user_func_array('upsertEvent', func_get_args());
+   return call_user_func_array(__NAMESPACE__.'\upsertEvent', func_get_args());
 }
 
 function editEvent()
 {
-   return call_user_func_array('upsertEvent', func_get_args());
+   return call_user_func_array(__NAMESPACE__.'\upsertEvent', func_get_args());
 }
 
 function upsertEvent(
@@ -38,11 +38,15 @@ function upsertEvent(
    $from, 
    $to,
    $type,
-   $annotation,
+   $annotation = '',
    $severity = 'unknown',
    $id = -1
 )
 {
+   $annotation = $annotation ?: '';
+   $severity = $severity ?: 'unknown';
+   $id = (is_null($id)) ? -1 : $id;
+
    /*
    $response = DB::query('CALL upsertEvent(%i, %s, %s, %s, %i, %i, %s);',
       $id,

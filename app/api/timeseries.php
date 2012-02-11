@@ -1,66 +1,123 @@
 <?php
 namespace spoons\api;
 
-require_once('../app/resources/timeseries.php');
+require_once '../app/constants.php';
+require_once '../app/resources/timeseries.php';
+
 use \spoons\resources\Timeseries;
 
 
-const FROM = 'from';
-const TO = 'to';
-const PERIOD_SIZE = 'period_size';
-const PERIOD_SHIFT = 'perdiod_shift';
-const LANG = 'lang';
-const JS = 'js';
-
-
-$app->get('/api/timeseries', function() {
+$app->get('/api/timeseries', function() 
+{
    global $app;
-   $getMembers = $app->request()->get('members');
-   $getAttributes = $app->request()->get('attributes');
+   $request = $app->request();
 
-   $collection = Timeseries::getCollection($getMembers, $getAttributes);
+   $getMembers = $request->get('members');
+   $getAttributes = $request->get('attributes');
+
+   $collection = Timeseries\getCollection($getMembers, $getAttributes);
 
    // Error checking...
 
    echo json_encode($collection);
 });
 
-// Retrieve list of members within a group.
-$app->get('/api/timeseries/:group', function($group) {
-   $group = Timeseries::getGroup($group);
+$app->get('/api/timeseries/:group', function($group) 
+{
+   global $app;
+   $lang = $app->request()->get(LANG);
+
+   $group = Timeseries\getGroup($group, $lang);
 
    // Error checking...
-
-   echo json_encode($group);
+   // $group might not exist.
+   if (empty($group)) 
+   {
+      $app->notFound();
+   }
+   else
+   {
+      echo json_encode($group);
+   }
 });
 
-// Retrieve attributes of a given group.
-$app->get('/api/timeseries/:group/attributes', function($group) {
-   $groupAttributes = Timeseries::getGroupAttributes($group);
+$app->get('/api/timeseries/:group/attributes', function($group) 
+{
+   global $app;
+   $lang = $app->request()->get(LANG);
 
-   echo json_encode($groupAttributes);
+   $groupAttributes = Timeseries\getGroupAttributes($group, $lang);
+
+   if (empty($groupAttributes))
+   {
+      $app->notFound();
+   }
+   else
+   {
+      echo json_encode($groupAttributes);
+   }
 });
 
 // Retrieve statistics for the given series.
-$app->get('/api/timeseries/:group/:name', function($group, $name) {
-   $statistics = Timeseries::getSeriesStatistics($group, $name);
+$app->get('/api/timeseries/:group/:name', function($group, $name) 
+{
+   global $app;
+   $lang = $app->request()->get(LANG);
 
-   echo json_encode($statistics);
+   $statistics = Timeseries\getSeriesStatistics($group, $name, $lang);
+
+   if (empty($statistics))
+   {
+      $app->notFound();
+   }
+   else
+   {
+      echo json_encode($statistics);
+   }
 });
 
-// Retrieve data points for the given series and attribute. 'from' and 'to' parameters are required.
-$app->get('/api/timeseries/:group/:name/:attribute', function($group, $name, $attribute) {
+$app->get('/api/timeseries/:group/:name/:attribute', 
+   $ensureTimerange, 
+   function($group, $name, $attribute) 
+{
    global $app;
-   $getParams = $app->request()->get();
-   
-   $data = Timeseries::getSeriesAttribute($group, $name, $attribute, $getParams);
+   $request = $app->request();
 
+   $from = $request->get(FROM);
+   $to =  $request->get(TO);
+   $lang = $request->get(LANG);
+   $periodSize = $request->get(PERIOD_SIZE);
+   $periodShift = $request->get(PERIOD_SHIFT);
+   $js = $request->get(JS);
+
+   $data = Timeseries\getSeriesAttribute(
+      $group,
+      $name,
+      $attribute,
+      $from,
+      $to,
+      $lang,
+      $periodSize,
+      $periodShift
+   );
+
+   if (!is_null($js))
+   {
+      $data = array_map(function($obj)
+      {
+         $values = array_values($obj);
+         $values[0] = $values[0] * 60 * 1000;
+         $values[1] = (int) $values[1];
+         return $values;
+      }, $data);
+   }
+ 
    echo json_encode($data);
 });
 
 // Retrieve last minute data for a specific series.
 $app->get('/api/timeseries/:group/:name/last_minute', function($group, $name) {
-   $lastMinute = Timeseries::getLastMinute($group, $name);
+   $lastMinute = Timeseries\getLastMinute($group, $name);
 
    echo json_encode($lastMinute);
 });

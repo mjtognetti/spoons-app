@@ -28,7 +28,7 @@ Event = Backbone.Model.extend({
          to: this.get('to').getTime() / 1000
       }, {
          success: _.bind(this.saveSuccess, this),
-         error: _.bind(this.saveFailure, this)
+         error: _.bind(this.saveFailure, this),
       });
    },
    edit: function() {

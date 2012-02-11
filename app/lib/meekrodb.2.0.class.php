@@ -77,6 +77,8 @@ class DB {
   public static function replace() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'replace'), $args); }
   public static function update() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'update'), $args); }
   public static function delete() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'delete'), $args); }
+
+  public static function call() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'call'), $args); }
   
   public static function insertId() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'insertId'), $args); }
   public static function count() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'count'), $args); }
@@ -463,7 +465,7 @@ class MeekroDB {
       if ($type == 'ls') $result = $this->wrapStr($arg, "'", true);
       else if ($type == 'li') $result = array_map('intval', $arg);
       else if ($type == 'ld') $result = array_map('floatval', $arg);
-      else if ($type == 'lb') $result = array_map('$this->formatTableName', $arg);
+      else if ($type == 'lb') $result = array_map(array($this, 'formatTableName'), $arg);
       else if ($type == 'll') $result = $arg;
       else if (! $result) $this->nonSQLError("Badly formatted SQL query: $sql");
       
@@ -542,7 +544,8 @@ class MeekroDB {
       
       call_user_func($success_handler, array(
         'query' => $sql,
-        'runtime' => $runtime
+        'runtime' => $runtime,
+        'affected' => $db->affected_rows
       )); 
     }
     
@@ -657,6 +660,23 @@ class MeekroDB {
     }  
     
     return $row[$column];
+  }
+
+  public function call() {
+    $args = func_get_args();
+    $result = call_user_func_array(array($this, 'query'), $args);
+
+    $this->freeAllResults();
+    return $result;
+  }
+
+  public function freeAllResults() {
+    $db = $this->get();
+    
+    while($db->more_results()) {
+      $db->next_result();
+      $this->freeResult($db->use_result());
+    }
   }
   
   protected function checkError() {

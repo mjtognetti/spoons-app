@@ -1,6 +1,6 @@
 define({
 urls: {
-   root: '../../api',
+   root: './api',
    series: '/timeseries',
    events: '/events',
    tweets: '/tweets'
