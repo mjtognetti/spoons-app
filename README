@@ -1,3 +1,5 @@
 SPOONS Web Application - initial commit 
 
-**You will need a proper config file for this app to function**
+**
+You will need a proper config file for this app to function. Look at config/fake_config.php to view the config gile structure.
+**
