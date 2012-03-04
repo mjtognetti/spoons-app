@@ -35,7 +35,7 @@ require([
    events = events = new Events({ timerange: timerange });
    tweets = new Tweets([], { timerange: timerange });
 
-   rangeSelector = new RangeSelector({ el: $('#rangeSelector-container'), timerange: timerange });
+   rangeSelector = new RangeSelector({ el: $('#top-bar'), timerange: timerange });
    
    chart = new Chart({
       legend: $('#legend-container'),
