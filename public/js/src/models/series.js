@@ -3,7 +3,7 @@ define([
    'backbone',
    'publisher',
    'lib/utils',
-   'src/mixins',
+   'src/models/mixins',
    'src/constants',
 ], function(_, Backbone, publisher, Utils, mixins, constants) {
 var Series, SeriesCollection, channels = constants.channels;

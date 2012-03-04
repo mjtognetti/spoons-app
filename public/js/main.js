@@ -10,9 +10,9 @@ require.config({
 require([
    'jquery',
    'lib/utils',
-   'src/events',
-   'src/series',
-   'src/tweets',
+   'src/models/events',
+   'src/models/series',
+   'src/models/tweets',
    'src/controllers/chart',
    'src/controllers/timerange',
    'src/controllers/seriesSelector',

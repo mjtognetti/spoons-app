@@ -5,7 +5,7 @@ define([
    'publisher',
    'lib/utils',
    'src/constants',
-   'src/events',
+   'src/models/events',
    'order!js/lib/vendor/jquery-ui.js',
    'order!js/lib/vendor/jquery.timePicker.js'
 ], function($, _, Backbone, publisher, Utils, constants, Events) {

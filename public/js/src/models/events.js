@@ -4,7 +4,7 @@ define([
    'publisher',
    'lib/utils',
    'src/constants',
-   'src/mixins'
+   'src/models/mixins'
 ], function(_, Backbone, publisher, Utils, constants, mixin) {
 var Event, EventCollection, Events, 
     urls = constants.urls, channels = constants.channels;
